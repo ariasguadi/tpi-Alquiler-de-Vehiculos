@@ -3,12 +3,11 @@
 ```text
 +----------------------------------------------------------------------------------+
 |                                                                                  |
-|                              [NOMBRE DE LA UNIVERSIDAD]                          |
+|                              [UNIVERSIDAD GASTON DACHARY]                        |
 |                                                                                  |
-|                          [FACULTAD / REGIONAL / SEDE]                            |
+|                          [Ing. informática | Sede Campus]                        |
 |                                                                                  |
 |                                                                                  |
-|                           [NOMBRE DE LA CARRERA]                                 |
 |                                                                                  |
 |                                                                                  |
 |                                                                                  |
@@ -18,10 +17,10 @@
 |                                                                                  |
 |                                                                                  |
 |                                                                                  |
-|                     Materia: [NOMBRE DE LA MATERIA]                              |
+|                     Materia: [Programación Estructurada]                         |
 |                     Docente: [NOMBRE DEL DOCENTE]                                |
-|                     Comision: [NUMERO O NOMBRE DE COMISION]                      |
-|                     Anio lectivo: [ANIO]                                         |
+|                     Comision: [A]                                                |
+|                     Anio lectivo: [2026]                                         |
 |                                                                                  |
 |                                                                                  |
 |                                                                                  |
