@@ -25,36 +25,16 @@
 |                                                                                  |
 |                                                                                  |
 |                     Integrantes:                                                 |
-|                     - [APELLIDO, NOMBRE] - Legajo: [NUMERO]                      |
-|                     - [APELLIDO, NOMBRE] - Legajo: [NUMERO]                      |
-|                     - [APELLIDO, NOMBRE] - Legajo: [NUMERO]                      |
+|                     - [ARIAS, GUADALUPE] - Legajo: [68227]                       |
+|                     - [DUARTE, EMILY] - Legajo: [NUMERO]                         |
+|                     - [VEDOYA CANTONI, ANA PAZ] - Legajo: [NUMERO]               |
 |                                                                                  |
 |                                                                                  |
-|                     Fecha de entrega: [DD/MM/AAAA]                               |
+|                     Fecha de entrega: [08/11/2026]                               |
 |                                                                                  |
 +----------------------------------------------------------------------------------+
 ```
 
-## Datos del proyecto
-
-| Campo | Valor |
-|---|---|
-| Nombre del sistema | Sistema de Gestion de Alquiler de Vehiculos |
-| Tipo de trabajo | Trabajo Practico Integrador |
-| Materia | [NOMBRE DE LA MATERIA] |
-| Carrera | [NOMBRE DE LA CARRERA] |
-| Docente | [NOMBRE DEL DOCENTE] |
-| Comision | [NUMERO O NOMBRE DE COMISION] |
-| Anio lectivo | [ANIO] |
-| Fecha de entrega | [DD/MM/AAAA] |
-
-## Integrantes
-
-| Apellido y nombre | Legajo | Correo electronico |
-|---|---|---|
-| [APELLIDO, NOMBRE] | [NUMERO] | [CORREO] |
-| [APELLIDO, NOMBRE] | [NUMERO] | [CORREO] |
-| [APELLIDO, NOMBRE] | [NUMERO] | [CORREO] |
 
 ## Datos tecnicos
 
