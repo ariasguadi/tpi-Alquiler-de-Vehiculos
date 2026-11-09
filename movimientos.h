@@ -1,22 +1,22 @@
 #ifndef MOVIMIENTOS_H
 #define MOVIMIENTOS_H
 
-#include <string>
-#include <vector>
-
+#include <stdbool.h>
+#include <stddef.h>
 #include "comun.h"
 
-bool cargarMovimientos(std::vector<Movimiento>& movimientos);
-bool guardarMovimientos(const std::vector<Movimiento>& movimientos);
-int proximoNumeroMovimiento();
-std::string nombreArchivoMovimientos(int dni);
-bool regenerarArchivoMovimientosCliente(int dni, std::string& error);
-bool regenerarTodosLosArchivosTexto(std::string& error);
-bool registrarMovimiento(int numAlquiler, const std::string& tipo, double monto,
-                         int fecha, const std::string& medio, std::string& error);
+bool cargarMovimientos(Movimiento** movimientos, int* cantidad);
+bool guardarMovimientos(const Movimiento* movimientos, int cantidad);
+void liberarMovimientos(Movimiento* movimientos);
+int proximoNumeroMovimiento(void);
+const char* nombreArchivoMovimientos(int dni);
+bool regenerarArchivoMovimientosCliente(int dni, char* error, size_t tamError);
+bool regenerarTodosLosArchivosTexto(char* error, size_t tamError);
+bool registrarMovimiento(int numAlquiler, const char* tipo, double monto,
+                         int fecha, const char* medio, char* error, size_t tamError);
 
-void registrarPago();
-void listarMovimientos();
-void submenuMovimientos();
+void registrarPago(void);
+void listarMovimientos(void);
+void submenuMovimientos(void);
 
 #endif /* MOVIMIENTOS_H */

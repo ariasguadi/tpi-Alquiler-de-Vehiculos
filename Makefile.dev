@@ -1,14 +1,14 @@
 # ---------------------------------------------------------------------------
 # Makefile del proyecto SistemaAlquiler.dev para Embarcadero Dev-C++.
-# Compila solamente la aplicacion principal (sistema.exe) con C++11.
+# Compila solamente la aplicacion principal (sistema.exe) con C99.
 # ---------------------------------------------------------------------------
 
-CXX      = C:/PROGRA~2/Embarcadero/Dev-Cpp/TDM-GCC-64/bin/g++.exe
-CXXFLAGS = -std=c++11 -Wall -Wextra -O2
+CC       = C:/PROGRA~2/Embarcadero/Dev-Cpp/TDM-GCC-64/bin/gcc.exe
+CFLAGS   = -std=c99 -Wall -Wextra -O2
 
 BIN      = sistema.exe
-FUENTES  = main.cpp menu.cpp fechas.cpp utils.cpp clientes.cpp vehiculos.cpp \
-           alquileres.cpp movimientos.cpp reportes.cpp
+FUENTES  = main.c menu.c fechas.c utils.c clientes.c vehiculos.c \
+           alquileres.c movimientos.c reportes.c
 CABECERAS = $(wildcard *.h)
 
 .PHONY: all clean
@@ -16,7 +16,7 @@ CABECERAS = $(wildcard *.h)
 all: $(BIN)
 
 $(BIN): $(FUENTES) $(CABECERAS)
-	"$(CXX)" $(CXXFLAGS) -o $@ $(FUENTES)
+	"$(CC)" $(CFLAGS) -o $@ $(FUENTES)
 
 clean:
 	-del /Q $(BIN) 2>NUL

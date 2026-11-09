@@ -1,65 +1,69 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <cstddef>
-#include <string>
-#include <vector>
+#include <stdbool.h>
+#include <stddef.h>
+
+typedef enum {
+    LEIDO,
+    VOLVER,
+    FIN_ENTRADA
+} EstadoLectura;
 
 /* Modo de prueba: evita limpiar pantalla y pausar para pruebas automaticas. */
 extern bool modoPrueba;
 extern bool finEntrada;
 
-/* Entrada de datos por consola. Devuelven false si se alcanzo el fin de entrada. */
-void limpiarPantalla();
-void pausarPantalla();
-bool leerTexto(const std::string& mensaje, std::string& salida, bool permitirVacio = false,
-               std::size_t maximo = 0);
-bool leerEntero(const std::string& mensaje, int minimo, int maximo, int& salida);
-bool leerDouble(const std::string& mensaje, double minimoExclusivo, double& salida);
-bool leerDoubleEnRango(const std::string& mensaje, double minimoExclusivo,
-                       double maximoInclusivo, double& salida);
-bool leerDNI(const std::string& mensaje, int& salida);
-bool leerPatente(const std::string& mensaje, std::string& salida);
-bool leerFecha(const std::string& mensaje, int& salida);
-bool leerFechaEnRango(const std::string& mensaje, int fechaMinima, int fechaMaxima, int& salida);
-bool leerSN(const std::string& mensaje);
+/* Entrada de datos por consola. */
+void limpiarPantalla(void);
+void pausarPantalla(void);
+
+EstadoLectura leerTexto(const char* mensaje, char* salida, size_t tamSalida,
+                        bool permitirVacio, size_t maximo);
+EstadoLectura leerEntero(const char* mensaje, int minimo, int maximo, int* salida);
+EstadoLectura leerDouble(const char* mensaje, double minimoExclusivo, double* salida);
+EstadoLectura leerDoubleEnRango(const char* mensaje, double minimoExclusivo,
+                               double maximoInclusivo, double* salida);
+EstadoLectura leerDNI(const char* mensaje, int* salida);
+EstadoLectura leerPatente(const char* mensaje, char* salida, size_t tamSalida);
+EstadoLectura leerFecha(const char* mensaje, int* salida);
+EstadoLectura leerFechaEnRango(const char* mensaje, int fechaMinima, int fechaMaxima, int* salida);
+EstadoLectura leerSN(const char* mensaje, bool* salida);
 
 /* Utilidades de texto. */
-std::string recortar(const std::string& texto);
-std::string aMayusculas(const std::string& texto);
-std::string aMinusculas(const std::string& texto);
-std::string normalizarPatente(const std::string& entrada);
-std::string normalizarEmail(const std::string& entrada);
-std::string limitar(const std::string& texto, std::size_t maximo);
-std::string cadenaAString(const char* origen, int tam);
-void copiarCadena(char* destino, int tam, const std::string& origen);
-std::vector<std::string> dividir(const std::string& texto, char separador);
-bool soloDigitos(const std::string& texto);
-std::string enteroAString(int valor);
+char* recortar(char* texto);
+char* aMayusculas(char* texto);
+char* aMinusculas(char* texto);
+void normalizarPatente(const char* entrada, char* salida, size_t tamSalida);
+void normalizarEmail(const char* entrada, char* salida, size_t tamSalida);
+char* limitar(char* texto, size_t maximo);
+void copiarCadena(char* destino, size_t tam, const char* origen);
+int dividir(char* texto, char separador, char* partes[], int maxPartes);
+bool soloDigitos(const char* texto);
 bool esFinito(double valor);
 
 /* Validaciones de formato. */
-bool esPatenteVieja(const std::string& patente);
-bool esPatenteMercosur(const std::string& patente);
-bool esPatenteMotoVieja(const std::string& patente);
-bool esPatenteMotoMercosur(const std::string& patente);
-bool esPatenteValida(const std::string& patente);
-bool validarPatente(const std::string& patente);
+bool esPatenteVieja(const char* patente);
+bool esPatenteMercosur(const char* patente);
+bool esPatenteMotoVieja(const char* patente);
+bool esPatenteMotoMercosur(const char* patente);
+bool esPatenteValida(const char* patente);
+bool validarPatente(const char* patente);
 bool validarDNI(int dni);
-bool validarNombre(const std::string& nombre);
-bool validarTelefono(const std::string& telefono);
-bool validarEmail(const std::string& email);
-bool validarDireccion(const std::string& direccion);
-bool validarMarca(const std::string& marca);
-bool validarModelo(const std::string& modelo);
-bool esTextoAlfanumericoValido(const std::string& texto, int longitudMinima);
-bool validarTipoVehiculo(const std::string& tipo);
+bool validarNombre(const char* nombre);
+bool validarTelefono(const char* telefono);
+bool validarEmail(const char* email);
+bool validarDireccion(const char* direccion);
+bool validarMarca(const char* marca);
+bool validarModelo(const char* modelo);
+bool esTextoAlfanumericoValido(const char* texto, int longitudMinima);
+bool validarTipoVehiculo(const char* tipo);
 bool validarAnioVehiculo(int anio);
 bool validarCapacidadVehiculo(int capacidad);
 bool validarPrecioDia(double precio);
-bool validarEstadoVehiculo(const std::string& estado);
-bool validarEstadoAlquiler(const std::string& estado);
-bool validarTipoMovimiento(const std::string& tipo);
-bool validarMedioPago(const std::string& medio);
+bool validarEstadoVehiculo(const char* estado);
+bool validarEstadoAlquiler(const char* estado);
+bool validarTipoMovimiento(const char* tipo);
+bool validarMedioPago(const char* medio);
 
 #endif /* UTILS_H */

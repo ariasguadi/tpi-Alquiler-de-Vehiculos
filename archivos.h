@@ -1,77 +1,150 @@
 #ifndef ARCHIVOS_H
 #define ARCHIVOS_H
 
-#include <cerrno>
-#include <cstdio>
-#include <fstream>
-#include <string>
-#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <errno.h>
 
 /*
- * Plantillas genericas para persistencia binaria.
- * Cada registro se escribe tal cual ocupa en memoria (structs triviales).
+ * Persistencia binaria en C puro utilizando exclusivamente:
+ * FILE*, fopen, fread, fwrite, fseek, ftell y fclose.
  */
 
-inline bool existeArchivo(const std::string& ruta) {
-    std::FILE* archivo = std::fopen(ruta.c_str(), "rb");
+static inline int existeArchivo(const char* ruta) {
+    if (!ruta) return 0;
+    FILE* archivo = fopen(ruta, "rb");
     if (archivo != NULL) {
-        std::fclose(archivo);
-        return true;
+        fclose(archivo);
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-template <typename T>
-bool cargarRegistros(const std::string& ruta, std::vector<T>& registros, std::string& error) {
-    registros.clear();
-    std::ifstream archivo(ruta.c_str(), std::ios::binary);
-    if (!archivo.is_open()) {
-        errno = 0;
-        std::FILE* prueba = std::fopen(ruta.c_str(), "rb");
-        if (prueba == NULL && errno == ENOENT) {
-            return true; /* Archivo inexistente: se considera una lista vacia. */
+static inline long contarRegistrosArchivo(const char* ruta, size_t tamRegistro) {
+    if (!ruta || tamRegistro == 0) return 0;
+    FILE* archivo = fopen(ruta, "rb");
+    if (archivo == NULL) return 0;
+    fseek(archivo, 0, SEEK_END);
+    long tamBytes = ftell(archivo);
+    fclose(archivo);
+    if (tamBytes <= 0) return 0;
+    return tamBytes / (long)tamRegistro;
+}
+
+static inline bool cargarRegistrosGenerico(const char* ruta, size_t tamRegistro,
+                                          void** registros, int* cantidad,
+                                          char* error, size_t tamError) {
+    if (!ruta || !registros || !cantidad || tamRegistro == 0) {
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "Parametros invalidos para cargar registros.");
         }
-        if (prueba != NULL) {
-            std::fclose(prueba);
+        return false;
+    }
+    *registros = NULL;
+    *cantidad = 0;
+
+    FILE* archivo = fopen(ruta, "rb");
+    if (!archivo) {
+        if (errno == ENOENT) {
+            /* Archivo inexistente: se considera una lista vacia sin error. */
+            return true;
         }
-        error = "No se pudo abrir el archivo " + ruta + " para lectura.";
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "No se pudo abrir el archivo %s para lectura.", ruta);
+        }
         return false;
     }
 
-    T registro;
-    while (archivo.read(reinterpret_cast<char*>(&registro), sizeof(T))) {
-        registros.push_back(registro);
+    if (fseek(archivo, 0, SEEK_END) != 0) {
+        fclose(archivo);
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "Error al buscar el fin del archivo %s.", ruta);
+        }
+        return false;
     }
 
-    if (archivo.bad()) {
-        error = "Ocurrio un error de lectura en el archivo " + ruta + ".";
+    long tamBytes = ftell(archivo);
+    if (tamBytes < 0) {
+        fclose(archivo);
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "Error al determinar el tamano del archivo %s.", ruta);
+        }
         return false;
     }
-    if (archivo.eof() && archivo.gcount() > 0) {
-        error = "El archivo " + ruta + " contiene un registro incompleto o corrupto.";
+
+    if (tamBytes == 0) {
+        fclose(archivo);
+        return true;
+    }
+
+    if (tamBytes % (long)tamRegistro != 0) {
+        fclose(archivo);
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "El archivo %s contiene un registro incompleto o corrupto.", ruta);
+        }
         return false;
     }
+
+    rewind(archivo);
+
+    int n = (int)(tamBytes / (long)tamRegistro);
+    void* buffer = malloc((size_t)tamBytes);
+    if (!buffer) {
+        fclose(archivo);
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "Memoria insuficiente para cargar el archivo %s.", ruta);
+        }
+        return false;
+    }
+
+    size_t leidos = fread(buffer, tamRegistro, (size_t)n, archivo);
+    fclose(archivo);
+
+    if (leidos != (size_t)n) {
+        free(buffer);
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "Ocurrio un error de lectura en el archivo %s.", ruta);
+        }
+        return false;
+    }
+
+    *registros = buffer;
+    *cantidad = n;
     return true;
 }
 
-template <typename T>
-bool guardarRegistros(const std::string& ruta, const std::vector<T>& registros, std::string& error) {
-    std::ofstream archivo(ruta.c_str(), std::ios::binary | std::ios::trunc);
-    if (!archivo.is_open()) {
-        error = "No se pudo abrir el archivo " + ruta + " para escritura.";
+static inline bool guardarRegistrosGenerico(const char* ruta, size_t tamRegistro,
+                                           const void* registros, int cantidad,
+                                           char* error, size_t tamError) {
+    if (!ruta || tamRegistro == 0) {
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "Parametros invalidos para guardar registros.");
+        }
         return false;
     }
 
-    if (!registros.empty()) {
-        archivo.write(reinterpret_cast<const char*>(&registros[0]),
-                      static_cast<std::streamsize>(registros.size() * sizeof(T)));
-    }
-    archivo.flush();
-    if (!archivo.good()) {
-        error = "No se pudo escribir correctamente en el archivo " + ruta + ".";
+    FILE* archivo = fopen(ruta, "wb");
+    if (!archivo) {
+        if (error && tamError > 0) {
+            snprintf(error, tamError, "No se pudo abrir el archivo %s para escritura.", ruta);
+        }
         return false;
     }
-    archivo.close();
+
+    if (cantidad > 0 && registros != NULL) {
+        size_t escritos = fwrite(registros, tamRegistro, (size_t)cantidad, archivo);
+        if (escritos != (size_t)cantidad) {
+            fclose(archivo);
+            if (error && tamError > 0) {
+                snprintf(error, tamError, "No se pudo escribir correctamente en el archivo %s.", ruta);
+            }
+            return false;
+        }
+    }
+
+    fclose(archivo);
     return true;
 }
 

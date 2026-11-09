@@ -2,33 +2,33 @@
 setlocal
 
 rem ---------------------------------------------------------------------------
-rem Compilacion del Sistema de Gestion de Alquiler de Vehiculos.
-rem Ajuste la variable GXX si el compilador esta instalado en otra ruta.
+rem Compilacion del Sistema de Gestion de Alquiler de Vehiculos en C (C99/C11).
+rem Ajuste la variable GCC si el compilador esta instalado en otra ruta.
 rem ---------------------------------------------------------------------------
 
-set "GXX=C:\Program Files (x86)\Embarcadero\Dev-Cpp\TDM-GCC-64\bin\g++.exe"
-set "CXXFLAGS=-std=c++11 -Wall -Wextra -O2"
+set "GCC=C:\Program Files (x86)\Embarcadero\Dev-Cpp\TDM-GCC-64\bin\gcc.exe"
+set "CFLAGS=-std=c99 -Wall -Wextra -O2"
 
-if not exist "%GXX%" goto sincompilador
+if not exist "%GCC%" goto sincompilador
 
 echo ==========================================
 echo  Compilando sistema.exe...
 echo ==========================================
-"%GXX%" %CXXFLAGS% -o sistema.exe main.cpp menu.cpp fechas.cpp utils.cpp clientes.cpp vehiculos.cpp alquileres.cpp movimientos.cpp reportes.cpp
+"%GCC%" %CFLAGS% -o sistema.exe main.c menu.c fechas.c utils.c clientes.c vehiculos.c alquileres.c movimientos.c reportes.c
 if errorlevel 1 goto error
 
 echo.
 echo ==========================================
 echo  Compilando generar_datos.exe...
 echo ==========================================
-"%GXX%" %CXXFLAGS% -o generar_datos.exe generar_datos.cpp fechas.cpp utils.cpp clientes.cpp vehiculos.cpp alquileres.cpp movimientos.cpp
+"%GCC%" %CFLAGS% -o generar_datos.exe generar_datos.c fechas.c utils.c clientes.c vehiculos.c alquileres.c movimientos.c
 if errorlevel 1 goto error
 
 echo.
 echo ==========================================
 echo  Compilando tests_validaciones.exe...
 echo ==========================================
-"%GXX%" %CXXFLAGS% -o tests_validaciones.exe tests_validaciones.cpp fechas.cpp utils.cpp
+"%GCC%" %CFLAGS% -o tests_validaciones.exe tests_validaciones.c fechas.c utils.c
 if errorlevel 1 goto error
 
 echo.
@@ -43,13 +43,13 @@ exit /b 0
 
 :sincompilador
 echo [ERROR] No se encontro el compilador:
-echo "%GXX%"
-echo Edite compilar.bat y ajuste la variable GXX.
+echo "%GCC%"
+echo Edite compilar.bat y ajuste la variable GCC.
 pause
 exit /b 1
 
 :error
 echo.
-echo [ERROR] Fallo la compilacion. Revise los mensajes anteriores.
+echo [ERROR] Ocurrio un fallo durante la compilacion.
 pause
 exit /b 1

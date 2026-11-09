@@ -1,93 +1,85 @@
-#include <iostream>
-#include <string>
-#include <vector>
+#include <stdio.h>
+#include <string.h>
 
 #include "comun.h"
 #include "fechas.h"
 #include "utils.h"
 
-namespace {
+static int totalPruebas = 0;
+static int totalFallos = 0;
 
-int totalPruebas = 0;
-int totalFallos = 0;
-
-void comprobar(bool condicion, const std::string& descripcion) {
+static void comprobar(bool condicion, const char* descripcion) {
     ++totalPruebas;
     if (condicion) {
-        std::cout << "[PASS] " << descripcion << "\n";
+        printf("[PASS] %s\n", descripcion);
     } else {
-        std::cout << "[FAIL] " << descripcion << "\n";
+        printf("[FAIL] %s\n", descripcion);
         ++totalFallos;
     }
 }
 
-void probarPatentes() {
-    std::cout << "\n--- PATENTES ---\n";
-    comprobar(normalizarPatente("abc123") == "ABC123",
-              "Normaliza minusculas a mayusculas");
-    comprobar(normalizarPatente("ab 123 cd") == "AB123CD",
-              "Quita espacios intermedios");
-    comprobar(normalizarPatente("ab-123-cd") == "AB123CD",
-              "Quita guiones");
-    comprobar(normalizarPatente("ab.123.cd") == "AB123CD",
-              "Quita puntos");
-    comprobar(validarPatente("ABC123"),
-              "Acepta patente vieja AAA999");
-    comprobar(validarPatente("AB123CD"),
-              "Acepta patente Mercosur AA999AA");
-    comprobar(validarPatente("123ABC"),
-              "Acepta patente moto vieja 999AAA");
-    comprobar(validarPatente("A123BCD"),
-              "Acepta patente moto Mercosur A999AAA");
+static void probarPatentes(void) {
+    printf("\n--- PATENTES ---\n");
+    char buf[32];
+
+    normalizarPatente("abc123", buf, sizeof(buf));
+    comprobar(strcmp(buf, "ABC123") == 0, "Normaliza minusculas a mayusculas");
+
+    normalizarPatente("ab 123 cd", buf, sizeof(buf));
+    comprobar(strcmp(buf, "AB123CD") == 0, "Quita espacios intermedios");
+
+    normalizarPatente("ab-123-cd", buf, sizeof(buf));
+    comprobar(strcmp(buf, "AB123CD") == 0, "Quita guiones");
+
+    normalizarPatente("ab.123.cd", buf, sizeof(buf));
+    comprobar(strcmp(buf, "AB123CD") == 0, "Quita puntos");
+
+    comprobar(validarPatente("ABC123"), "Acepta patente vieja AAA999");
+    comprobar(validarPatente("AB123CD"), "Acepta patente Mercosur AA999AA");
+    comprobar(validarPatente("123ABC"), "Acepta patente moto vieja 999AAA");
+    comprobar(validarPatente("A123BCD"), "Acepta patente moto Mercosur A999AAA");
+
     comprobar(esPatenteVieja("ABC123"), "Identifica patente vieja");
     comprobar(esPatenteMercosur("AB123CD"), "Identifica patente Mercosur");
     comprobar(esPatenteMotoVieja("123ABC"), "Identifica patente moto vieja");
     comprobar(esPatenteMotoMercosur("A123BCD"), "Identifica patente moto Mercosur");
+
     comprobar(esPatenteValida("ABC123") && esPatenteValida("AB123CD") &&
-                  esPatenteValida("123ABC") && esPatenteValida("A123BCD"),
+              esPatenteValida("123ABC") && esPatenteValida("A123BCD"),
               "esPatenteValida acepta los cuatro formatos");
-    comprobar(!validarPatente("abc123"),
-              "Rechaza patente vieja en minusculas sin normalizar");
-    comprobar(!validarPatente("ABC-123"),
-              "Rechaza patente con guion sin normalizar");
-    comprobar(!validarPatente("AB123C"),
-              "Rechaza Mercosur con una letra final");
-    comprobar(!validarPatente("ABC12D"),
-              "Rechaza patente vieja con letra en los digitos");
-    comprobar(!validarPatente("ABCD123"),
-              "Rechaza patente de 7 caracteres con 4 letras iniciales");
-    comprobar(!validarPatente("AB123CDE"),
-              "Rechaza patente de 8 caracteres");
-    comprobar(!validarPatente("AB123C1"),
-              "Rechaza Mercosur con digito final");
-    comprobar(!validarPatente("ABCDEF"),
-              "Rechaza seis letras");
-    comprobar(!validarPatente("1234567"),
-              "Rechaza siete digitos");
-    comprobar(!validarPatente(""),
-              "Rechaza patente vacia");
+
+    comprobar(!validarPatente("abc123"), "Rechaza patente vieja en minusculas sin normalizar");
+    comprobar(!validarPatente("ABC-123"), "Rechaza patente con guion sin normalizar");
+    comprobar(!validarPatente("AB123C"), "Rechaza Mercosur con una letra final");
+    comprobar(!validarPatente("ABC12D"), "Rechaza patente vieja con letra en los digitos");
+    comprobar(!validarPatente("ABCD123"), "Rechaza patente de 7 caracteres con 4 letras iniciales");
+    comprobar(!validarPatente("AB123CDE"), "Rechaza patente de 8 caracteres");
+    comprobar(!validarPatente("AB123C1"), "Rechaza Mercosur con digito final");
+    comprobar(!validarPatente("ABCDEF"), "Rechaza seis letras");
+    comprobar(!validarPatente("1234567"), "Rechaza siete digitos");
+    comprobar(!validarPatente(""), "Rechaza patente vacia");
 }
 
-void probarDNI() {
-    std::cout << "\n--- DNI ---\n";
+static void probarDNI(void) {
+    printf("\n--- DNI ---\n");
     comprobar(validarDNI(30111222), "Acepta DNI de 8 digitos");
-    comprobar(validarDNI(1000000), "Acepta DNI de 7 digitos");
-    comprobar(validarDNI(99999999), "Acepta DNI maximo");
-    comprobar(!validarDNI(999999), "Rechaza DNI de 6 digitos");
-    comprobar(!validarDNI(100000000), "Rechaza DNI de 9 digitos");
+    comprobar(validarDNI(1000000), "Acepta DNI minimo (1.000.000)");
+    comprobar(validarDNI(50000000), "Acepta DNI maximo (50.000.000)");
+    comprobar(!validarDNI(999999), "Rechaza DNI menor al minimo (999.999)");
+    comprobar(!validarDNI(50000001), "Rechaza DNI mayor al maximo (50.000.001)");
+    comprobar(!validarDNI(99999999), "Rechaza DNI fuera de rango (99.999.999)");
     comprobar(!validarDNI(0), "Rechaza DNI cero");
     comprobar(!validarDNI(-1), "Rechaza DNI negativo");
 }
 
-void probarCliente() {
-    std::cout << "\n--- DATOS DE CLIENTE ---\n";
+static void probarCliente(void) {
+    printf("\n--- DATOS DE CLIENTE ---\n");
     comprobar(validarNombre("Gomez Martin"), "Acepta apellido y nombre");
     comprobar(validarNombre("O'Connor Maria"), "Acepta apostrofe");
     comprobar(validarNombre("  Gomez   Martin  "), "Acepta espacios extra");
     comprobar(validarNombre("Gomez"), "Acepta un solo nombre");
     comprobar(validarNombre("Ana"), "Acepta nombre de tres letras");
-    comprobar(validarNombre("N\xC3\xBA\xC3\xB1" "ez"),
-              "Acepta letras con tilde y enie");
+    comprobar(validarNombre("N\xC3\xBA\xC3\xB1" "ez"), "Acepta letras con tilde y enie");
     comprobar(!validarNombre("A"), "Rechaza nombre de un caracter");
     comprobar(!validarNombre("Gomez 123"), "Rechaza numeros en el nombre");
     comprobar(!validarNombre("123"), "Rechaza nombre solo numerico");
@@ -101,15 +93,14 @@ void probarCliente() {
     comprobar(!validarTelefono("abc123"), "Rechaza letras en telefono");
     comprobar(!validarTelefono("12345"), "Rechaza telefono con menos de 8 digitos");
     comprobar(!validarTelefono("1234567"), "Rechaza telefono de 7 digitos");
-    comprobar(!validarTelefono("1234567890123456"),
-              "Rechaza telefono de 16 digitos");
-    comprobar(!validarTelefono("3764+100001"),
-              "Rechaza signo + fuera del inicio");
+    comprobar(!validarTelefono("1234567890123456"), "Rechaza telefono de 16 digitos");
+    comprobar(!validarTelefono("3764+100001"), "Rechaza signo + fuera del inicio");
 
+    char emailBuf[64];
     comprobar(validarEmail("mgomez@mail.com"), "Acepta e-mail normal");
     comprobar(validarEmail("a@b.c"), "Acepta e-mail corto valido");
-    comprobar(normalizarEmail(" MGomez@Mail.COM ") == "mgomez@mail.com",
-              "Normaliza e-mail a minusculas y sin espacios");
+    normalizarEmail(" MGomez@Mail.COM ", emailBuf, sizeof(emailBuf));
+    comprobar(strcmp(emailBuf, "mgomez@mail.com") == 0, "Normaliza e-mail a minusculas y sin espacios");
     comprobar(!validarEmail("sin-arroba.com"), "Rechaza e-mail sin arroba");
     comprobar(!validarEmail("a@mail"), "Rechaza e-mail sin dominio con punto");
     comprobar(!validarEmail("a b@mail.com"), "Rechaza e-mail con espacio");
@@ -130,8 +121,8 @@ void probarCliente() {
     comprobar(!validarDireccion(""), "Rechaza direccion en blanco");
 }
 
-void probarVehiculo() {
-    std::cout << "\n--- DATOS DE VEHICULO ---\n";
+static void probarVehiculo(void) {
+    printf("\n--- DATOS DE VEHICULO ---\n");
     comprobar(validarMarca("Toyota"), "Acepta marca Toyota");
     comprobar(validarMarca("Volkswagen"), "Acepta marca Volkswagen");
     comprobar(!validarMarca("123"), "Rechaza marca sin letras");
@@ -162,10 +153,8 @@ void probarVehiculo() {
 
     comprobar(validarAnioVehiculo(1990), "Acepta anio minimo 1990");
     comprobar(!validarAnioVehiculo(1989), "Rechaza anio anterior a 1990");
-    comprobar(validarAnioVehiculo(fechaActual() / 10000 + 1),
-              "Acepta anio actual + 1");
-    comprobar(!validarAnioVehiculo(fechaActual() / 10000 + 2),
-              "Rechaza anio actual + 2");
+    comprobar(validarAnioVehiculo(fechaActual() / 10000 + 1), "Acepta anio actual + 1");
+    comprobar(!validarAnioVehiculo(fechaActual() / 10000 + 2), "Rechaza anio actual + 2");
 
     comprobar(validarCapacidadVehiculo(1), "Acepta capacidad minima 1");
     comprobar(validarCapacidadVehiculo(60), "Acepta capacidad maxima 60");
@@ -199,8 +188,8 @@ void probarVehiculo() {
     comprobar(!validarMedioPago("Cheque"), "Rechaza medio de pago invalido");
 }
 
-void probarFechas() {
-    std::cout << "\n--- FECHAS ---\n";
+static void probarFechas(void) {
+    printf("\n--- FECHAS ---\n");
     comprobar(esBisiesto(2024), "2024 es bisiesto");
     comprobar(!esBisiesto(2026), "2026 no es bisiesto");
     comprobar(esBisiesto(2000), "2000 es bisiesto");
@@ -218,77 +207,120 @@ void probarFechas() {
     comprobar(!esFechaValida(18000101), "Rechaza anio anterior a 1900");
     comprobar(!esFechaValida(0), "Rechaza fecha cero");
 
-    comprobar(sumarDias(20260131, 1) == 20260201,
-              "Suma un dia al 31/01/2026");
-    comprobar(sumarDias(20261231, 1) == 20270101,
-              "Suma un dia al 31/12/2026");
-    comprobar(sumarDias(20240228, 1) == 20240229,
-              "Suma un dia al 28/02/2024");
-    comprobar(diasEntre(20260101, 20260131) == 30,
-              "Dias entre 01/01/2026 y 31/01/2026");
-    comprobar(diasEntre(20260228, 20260301) == 1,
-              "Dias entre 28/02/2026 y 01/03/2026");
-    comprobar(diasEntre(20240228, 20240301) == 2,
-              "Dias entre 28/02/2024 y 01/03/2024");
+    comprobar(sumarDias(20260131, 1) == 20260201, "Suma un dia al 31/01/2026");
+    comprobar(sumarDias(20261231, 1) == 20270101, "Suma un dia al 31/12/2026");
+    comprobar(sumarDias(20240228, 1) == 20240229, "Suma un dia al 28/02/2024");
+    comprobar(diasEntre(20260101, 20260131) == 30, "Dias entre 01/01/2026 y 31/01/2026");
+    comprobar(diasEntre(20260228, 20260301) == 1, "Dias entre 28/02/2026 y 01/03/2026");
+    comprobar(diasEntre(20240228, 20240301) == 2, "Dias entre 28/02/2024 y 01/03/2024");
 
-    comprobar(fechaAString(20260105) == "20260105", "Formatea fecha AAAAMMDD");
-    comprobar(fechaAString(0) == "-", "Formatea fecha cero como guion");
-    comprobar(fechaALarga(20260105) == "05/01/2026", "Formatea fecha DD/MM/AAAA");
+    comprobar(strcmp(fechaAString(20260105), "20260105") == 0, "Formatea fecha AAAAMMDD");
+    comprobar(strcmp(fechaAString(0), "-") == 0, "Formatea fecha cero como guion");
+    comprobar(strcmp(fechaALarga(20260105), "05/01/2026") == 0, "Formatea fecha DD/MM/AAAA");
 
-    comprobar(esFechaEnRango(20260115, 20260101, 20260131),
-              "Acepta fecha dentro del rango");
-    comprobar(!esFechaEnRango(20260201, 20260101, 20260131),
-              "Rechaza fecha fuera del rango");
-    comprobar(!esFechaEnRango(20260230, 20260101, 20260331),
-              "Rechaza fecha invalida dentro del rango");
+    comprobar(esFechaEnRango(20260115, 20260101, 20260131), "Acepta fecha dentro del rango");
+    comprobar(!esFechaEnRango(20260201, 20260101, 20260131), "Rechaza fecha fuera del rango");
+    comprobar(!esFechaEnRango(20260230, 20260101, 20260331), "Rechaza fecha invalida dentro del rango");
 
     int hoy = fechaActual();
     comprobar(esFechaPasadaOHoy(hoy), "Acepta hoy como fecha pasada o igual");
-    comprobar(esFechaPasadaOHoy(sumarDias(hoy, -1)),
-              "Acepta ayer como fecha pasada");
-    comprobar(!esFechaPasadaOHoy(sumarDias(hoy, 1)),
-              "Rechaza maniana como fecha pasada");
+    comprobar(esFechaPasadaOHoy(sumarDias(hoy, -1)), "Acepta ayer como fecha pasada");
+    comprobar(!esFechaPasadaOHoy(sumarDias(hoy, 1)), "Rechaza maniana como fecha pasada");
     comprobar(!esFechaPasadaOHoy(0), "Rechaza fecha cero como pasada");
     comprobar(esFechaFuturaOHoy(hoy), "Acepta hoy como fecha futura o igual");
-    comprobar(esFechaFuturaOHoy(sumarDias(hoy, 1)),
-              "Acepta maniana como fecha futura");
-    comprobar(!esFechaFuturaOHoy(sumarDias(hoy, -1)),
-              "Rechaza ayer como fecha futura");
+    comprobar(esFechaFuturaOHoy(sumarDias(hoy, 1)), "Acepta maniana como fecha futura");
+    comprobar(!esFechaFuturaOHoy(sumarDias(hoy, -1)), "Rechaza ayer como fecha futura");
 
     char fechaFormateada[11];
     formatearFecha(20261108, fechaFormateada);
-    comprobar(std::string(fechaFormateada) == "08/11/2026",
-              "formatearFecha escribe DD/MM/AAAA en el buffer");
+    comprobar(strcmp(fechaFormateada, "08/11/2026") == 0, "formatearFecha escribe DD/MM/AAAA en el buffer");
 }
 
-void probarUtilitarios() {
-    std::cout << "\n--- UTILITARIOS ---\n";
-    comprobar(recortar("  hola  ") == "hola", "Recorta espacios exteriores");
-    comprobar(aMayusculas("Abc") == "ABC", "Convierte a mayusculas");
-    comprobar(aMinusculas("AbC") == "abc", "Convierte a minusculas");
-    comprobar(limitar("abcdef", 3) == "abc", "Limita texto largo");
-    comprobar(limitar("ab", 3) == "ab", "No modifica texto corto");
+static void probarVolver(void) {
+    printf("\n--- ESTADO VOLVER ('V' / 'v') ---\n");
+    const char* tempPath = "test_volver_input.tmp";
+    FILE* f = fopen(tempPath, "w");
+    if (!f) {
+        comprobar(false, "No se pudo crear archivo de prueba para VOLVER");
+        return;
+    }
+    /*
+     * Lineas enviadas a stdin:
+     * 1: "V\n"    -> debe dar VOLVER
+     * 2: "v\n"    -> debe dar VOLVER
+     * 3: "  V  \n" -> con espacios debe recortar y dar VOLVER
+     * 4: "Vega\n" -> palabra valida que empieza con V, debe dar LEIDO
+     * 5: "123\n"  -> entero valido, debe dar LEIDO
+     */
+    fprintf(f, "V\nv\n  V  \nVega\n123\n");
+    fclose(f);
+
+    if (freopen(tempPath, "r", stdin) != NULL) {
+        char buf[64];
+        EstadoLectura e1 = leerTexto("", buf, sizeof(buf), false, 60);
+        comprobar(e1 == VOLVER, "Ingresar 'V' en solitario devuelve estado VOLVER");
+
+        EstadoLectura e2 = leerTexto("", buf, sizeof(buf), false, 60);
+        comprobar(e2 == VOLVER, "Ingresar 'v' en solitario devuelve estado VOLVER");
+
+        EstadoLectura e3 = leerTexto("", buf, sizeof(buf), false, 60);
+        comprobar(e3 == VOLVER, "Ingresar '  V  ' con espacios devuelve estado VOLVER");
+
+        EstadoLectura e4 = leerTexto("", buf, sizeof(buf), false, 60);
+        comprobar(e4 == LEIDO && strcmp(buf, "Vega") == 0,
+                  "Ingresar 'Vega' (comienza con V pero tiene mas letras) devuelve LEIDO");
+
+        int valEntero = 0;
+        EstadoLectura e5 = leerEntero("", 1, 999, &valEntero);
+        comprobar(e5 == LEIDO && valEntero == 123,
+                  "Ingresar '123' devuelve LEIDO con entero correcto");
+
+#ifdef _WIN32
+        freopen("CON", "r", stdin);
+#endif
+    } else {
+        comprobar(false, "freopen no pudo redirigir stdin para probar VOLVER");
+    }
+    remove(tempPath);
+}
+
+static void probarUtilitarios(void) {
+    printf("\n--- UTILITARIOS ---\n");
+    char buf1[32] = "  hola  ";
+    comprobar(strcmp(recortar(buf1), "hola") == 0, "Recorta espacios exteriores");
+
+    char buf2[32] = "Abc";
+    comprobar(strcmp(aMayusculas(buf2), "ABC") == 0, "Convierte a mayusculas");
+
+    char buf3[32] = "AbC";
+    comprobar(strcmp(aMinusculas(buf3), "abc") == 0, "Convierte a minusculas");
+
+    char buf4[32] = "abcdef";
+    comprobar(strcmp(limitar(buf4, 3), "abc") == 0, "Limita texto largo");
+
+    char buf5[32] = "ab";
+    comprobar(strcmp(limitar(buf5, 3), "ab") == 0, "No modifica texto corto");
+
     comprobar(soloDigitos("123"), "Reconoce solo digitos");
     comprobar(!soloDigitos("12a"), "Rechaza letras entre digitos");
     comprobar(!soloDigitos(""), "Rechaza cadena vacia en soloDigitos");
 
-    std::vector<std::string> partes = dividir("a;b;c", ';');
-    comprobar(partes.size() == 3 && partes[0] == "a" && partes[1] == "b" &&
-                  partes[2] == "c",
+    char bufDiv[32] = "a;b;c";
+    char* partes[5];
+    int nPartes = dividir(bufDiv, ';', partes, 5);
+    comprobar(nPartes == 3 && strcmp(partes[0], "a") == 0 &&
+              strcmp(partes[1], "b") == 0 && strcmp(partes[2], "c") == 0,
               "Divide texto por punto y coma");
 
     char buffer[5];
     copiarCadena(buffer, 5, "abcdef");
-    comprobar(std::string(buffer) == "abcd", "Copia y trunca cadena");
-    comprobar(cadenaAString("Hola", 10) == "Hola", "Convierte char* a string");
+    comprobar(strcmp(buffer, "abcd") == 0, "Copia y trunca cadena");
 }
 
-} /* namespace */
-
-int main() {
-    std::cout << "==============================================\n";
-    std::cout << "   PRUEBAS DE VALIDACION DEL SISTEMA\n";
-    std::cout << "==============================================\n";
+int main(void) {
+    printf("==============================================\n");
+    printf("   PRUEBAS DE VALIDACION DEL SISTEMA\n");
+    printf("==============================================\n");
 
     probarPatentes();
     probarDNI();
@@ -296,14 +328,15 @@ int main() {
     probarVehiculo();
     probarFechas();
     probarUtilitarios();
+    probarVolver();
 
-    std::cout << "\n==============================================\n";
-    std::cout << "Total de pruebas: " << totalPruebas << "\n";
-    std::cout << "Fallos:           " << totalFallos << "\n";
+    printf("\n==============================================\n");
+    printf("Total de pruebas: %d\n", totalPruebas);
+    printf("Fallos:           %d\n", totalFallos);
     if (totalFallos == 0) {
-        std::cout << "RESULTADO: TODAS LAS PRUEBAS PASARON.\n";
+        printf("RESULTADO: TODAS LAS PRUEBAS PASARON.\n");
         return 0;
     }
-    std::cout << "RESULTADO: HAY PRUEBAS FALLIDAS.\n";
+    printf("RESULTADO: HAY PRUEBAS FALLIDAS.\n");
     return 1;
 }

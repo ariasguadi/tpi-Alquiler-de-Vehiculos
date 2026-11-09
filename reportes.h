@@ -1,16 +1,16 @@
 #ifndef REPORTES_H
 #define REPORTES_H
 
-void reporteVehiculosDisponibles();
-void reporteVehiculosAlquilados();
-void reporteAlquileresPorRango();
-void reporteAlquileresPorCliente();
-void reporteAlquileresPorVehiculo();
-void reporteAlquileresPorEstado();
-void reporteAlquileresPorImporte();
-void reportePagosPorPeriodo();
-void reporteClientesConDeuda();
-void reporteEstadisticas();
-void submenuReportes();
+void reporteVehiculosDisponibles(void);
+void reporteVehiculosAlquilados(void);
+void reporteAlquileresPorRango(void);
+void reporteAlquileresPorCliente(void);
+void reporteAlquileresPorVehiculo(void);
+void reporteAlquileresPorEstado(void);
+void reporteAlquileresPorImporte(void);
+void reportePagosPorPeriodo(void);
+void reporteClientesConDeuda(void);
+void reporteEstadisticas(void);
+void submenuReportes(void);
 
 #endif /* REPORTES_H */

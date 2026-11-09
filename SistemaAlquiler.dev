@@ -9,10 +9,10 @@ Libs=
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
-Compiler=-std=c++11
-CppCompiler=-std=c++11
+Compiler=-std=c99 -Wall -Wextra -O2
+CppCompiler=-std=c99 -Wall -Wextra -O2
 Linker=
-IsCpp=1
+IsCpp=0
 Icon=
 ExeOutput=
 ObjectOutput=
@@ -51,8 +51,8 @@ AutoIncBuildNr=0
 SyncProduct=1
 
 [Unit1]
-FileName=main.cpp
-CompileCpp=1
+FileName=main.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1
@@ -61,8 +61,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=menu.cpp
-CompileCpp=1
+FileName=menu.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1
@@ -81,8 +81,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=clientes.cpp
-CompileCpp=1
+FileName=clientes.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1
@@ -101,8 +101,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=vehiculos.cpp
-CompileCpp=1
+FileName=vehiculos.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1
@@ -121,8 +121,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit8]
-FileName=alquileres.cpp
-CompileCpp=1
+FileName=alquileres.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1
@@ -141,8 +141,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=movimientos.cpp
-CompileCpp=1
+FileName=movimientos.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1
@@ -161,8 +161,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=reportes.cpp
-CompileCpp=1
+FileName=reportes.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1
@@ -181,8 +181,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=fechas.cpp
-CompileCpp=1
+FileName=fechas.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1
@@ -201,8 +201,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=utils.cpp
-CompileCpp=1
+FileName=utils.c
+CompileCpp=0
 Folder=
 Compile=1
 Link=1

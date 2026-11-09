@@ -5,10 +5,6 @@
 *.gch
 *.layout
 
-# Datos locales: pueden contener informacion personal de clientes
-/*.dat
-/movimientos_*.txt
-
 # Carpetas/archivos de IDE
 *.cbp
 *.depend
